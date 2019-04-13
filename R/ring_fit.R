@@ -2,10 +2,10 @@
 ring_fit <- function(ring, azimuth, elev) {
   nas <- is.na(ring)
   if (sum(nas) == length(ring)) {
-    return(list(spd  = NA,
-                dir  = NA,
-                r2   = NA,
-                rmse = NA))
+    return(list(spd  = NA_real_,
+                dir  = NA_real_,
+                r2   = NA_real_,
+                rmse = NA_real_))
   }
   fit <- .lm.fit(cbind(1, cos(azimuth*pi/180), sin(azimuth*pi/180))[!nas, , drop = FALSE],
                  ring[!nas])

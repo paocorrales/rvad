@@ -1,76 +1,29 @@
-library(ncdf4)
+#' @import data.table
+VAD <- function(vr, azimuth, range, elev_ang,
+                max_na = 0.2, max_consecutive_na = 30,
+                r2_min = 0.8) {
+  # browser()
+  vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elev_ang = elev_ang)
 
+  vol[, vr_qc := ring_qc(vr, azimuth,
+                         max_na = max_na,
+                         max_consecutive_na = max_consecutive_na),
+      by = .(range, elev_ang)]
 
-radar <- nc_open("radar.nc")
+  vad <- vol[, ring_fit(vr_qc, azimuth, elev_ang),
+             by = .(range, elev_ang)]
 
-vr <- ncvar_get(radar, 'Vda')
-elev_ang <- ncvar_get(radar, 'elevation')
-range <- ncvar_get(radar, 'range')
-azimuth <- ncvar_get(radar, 'azimuth')
-cos_phi <- cos((azimuth*pi)/180)
-sin_phi <- sin((azimuth*pi)/180)
-start_index <-  ncvar_get(radar, 'sweep_start_ray_index')
-end_index <-  ncvar_get(radar, 'sweep_end_ray_index')
+  vad[, ht := beam_propagation(vad$range, elev_ang = vad$elev_ang)$ht]
 
-this_elev <- unique(elev_ang)[3]
-this_range <- range[1]
+  # 6. Control de calidad sobre el fit
+  #   - r2 mayor a un valor
+  #   - r2 no NA
+  vad <- vad[!fit_qc(vad$r2, r2_min = r2_min),
+             c("spd", "dir", "r2", "rmse") := NA]
+  vad[, .(range, elev_ang, height = ht, speed = spd, direction = dir, r2, rmse)]
 
-which_elev <- elev_ang == this_elev
-
-max_consecutive_na <- 30
-max_na <- 0.2
-r2_min <- 0.8
-
-
-
-# 1. Filtrar los datos según rango mínimo y máximo
-
-# 2. Para cada rango y elevación,
-elevs <- unique(elev_ang)
-K <- length(range)*length(elevs)
-spd <- rep(NA, length = K)
-dir <- rep(NA, length = K)
-r2 <- rep(NA, length = K)
-rmse <- rep(NA, length = K)
-
-k <- 0
-for (r in seq_along(range)) {
-  for (e in seq_along(elevs)) {
-    k <- k + 1
-    ring <- vr[r, elev_ang == elevs[e]]
-    az <-  azimuth[elev_ang == elevs[e]]
-    # 3. Control de calidad
-    #   - Cantidad de NAs
-    #   - Cantidad de NAs consecutivos
-    #   - Posible filtro pasa bajo
-
-    ring <- ring_qc(ring, az, max_na = max_na, max_consecutive_na = max_consecutive_na)
-
-    # 5. Si todo anda bien, haccer el fit
-    fit <- ring_fit(ring, az, elevs[e])
-
-    spd[k] <- fit$spd
-    dir[k] <- fit$dir
-    r2[k] <- fit$r2
-    rmse[k] <- fit$rmse
-  }
+  return(as.list(vad))
 }
-
-vad <- expand.grid(range = range, elev_ang = elevs)
-vad[["spd"]] <- spd
-vad[["dir"]] <- dir
-vad[["r2"]] <- r2
-vad[["rmse"]] <- rmse
-
-
-# 6. Control de calidad sobre el fit
-#   - r2 mayor a un valor
-#   - r2 no NA
-vad <- vad[fit_qc(vad$r2, r2_min), ]
-
-vad <- cbind(vad, beam_propagation(vad$range, elev_ang = vad$elev_ang))
-
-
 
 
 # Parametros
