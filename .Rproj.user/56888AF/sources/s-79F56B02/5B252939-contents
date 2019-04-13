@@ -12,11 +12,6 @@ sin_phi <- sin((azimuth*pi)/180)
 start_index <-  ncvar_get(radar, 'sweep_start_ray_index')
 end_index <-  ncvar_get(radar, 'sweep_end_ray_index')
 
-this_elev <- unique(elev_ang)[3]
-this_range <- range[1]
-
-which_elev <- elev_ang == this_elev
-
 max_consecutive_na <- 30
 max_na <- 0.2
 r2_min <- 0.8
@@ -70,6 +65,9 @@ vad <- vad[fit_qc(vad$r2, r2_min), ]
 
 vad <- cbind(vad, beam_propagation(vad$range, elev_ang = vad$elev_ang))
 
+ggplot(subset(vad, !is.na(spd) & range > 300 & range < 40000), aes(ht, spd)) + 
+  geom_point(aes(color = r2)) + 
+  coord_flip()
 
 
 
