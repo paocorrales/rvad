@@ -1,20 +1,23 @@
 vad_regrid <- function(vad,
-                       width, separation = width, ht.out = NULL) {
+                       resolution,
+                       bandwidth = resolution,
+                       ht.out = NULL) {
+  if (resolution > bandwidth) {
+    stop("resolution must be smaller or equal than bandwitdh")
+  }
+
   vad <- vad[complete.cases(vad), ]
 
   # browser()
   # todo: chequear que la grilla tenga sentido
-  half_separation <- separation/2
-  half_width <- width/2
+  half_resolution <- resolution/2
   if (is.null(ht.out)) {
-    ht.out <- c(min(vad$height),
-                seq(min(vad$height) + half_separation,
-                    max(vad$height) - half_separation,
-                    by = separation),
-                max(vad$height))
+    ht.out <- seq(min(vad$height) + half_resolution,
+                    max(vad$height) - half_resolution,
+                    by = resolution)
   }
 
-  grid <- .loess(vad$u, vad$v, vad$height, ht.out, vad$rmse, vad$range)
+  grid <- .loess(vad$u, vad$v, vad$height, ht.out, bandwidth, vad$rmse, vad$range)
   vad_grid <- data.frame(grid)
   class(vad_grid) <- c("rvad_vad", class(vad_grid))
   attr(vad_grid, "rvad_raw") <- FALSE
@@ -22,11 +25,13 @@ vad_regrid <- function(vad,
 }
 
 
-.loess <- function(u, v, ht, ht.out, rmse, range) {
+.loess <- function(u, v, ht, ht.out, bandwidth, rmse, range) {
   v_sd <- u_sd <- v_grid <- u_grid <- rep(0, length = length(ht.out))
+  half_bandwidth <- bandwidth/2
+  # browser()
   for (i in seq_along(ht.out)) {
-    sub <- ht >= (ht.out[i] - half_width) & ht <= (ht.out[i] + half_width)
-    weight_ht <- (1 - abs(ht[sub] - ht.out[i])^3/half_width^3)^3
+    sub <- ht >= (ht.out[i] - half_bandwidth) & ht <= (ht.out[i] + half_bandwidth)
+    weight_ht <- (1 - abs(ht[sub] - ht.out[i])^3/half_bandwidth^3)^3
     # weight_ht <- weight_ht/max(weight_ht)
     weight_rmse <- 1/(rmse[sub]) / max(1/rmse[sub])
     weight_range <- 1/(range[sub]^2) / max(1/range[sub]^2)
