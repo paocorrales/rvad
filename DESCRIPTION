@@ -6,8 +6,8 @@ Authors@R: c(
     person("Paola", "Corrales", email = "paola.corrales@cima.fcen.uba.ar", role = c("aut", "cre")),
     person("Elio", "Campitelli", email = "elio.campitelli@cima.fcen.uba.ar", role = c("ctb")))
 Description: This package implement an algorithm to process radial wind from Doppler radars
-    obtainning the proper horizontal wind. The implementation is based on Browning and Wexler 
-    (1968) <doi: 10.1175/1520-0450(1968)007%3C0105:TDOKPO%3E2.0.CO;2> 
+    obtainning the proper horizontal wind. The implementation is based on Browning and Wexler
+    (1968) <doi: 10.1175/1520-0450(1968)007%3C0105:TDOKPO%3E2.0.CO;2>
     with the addition of several quality controls.
 License: GPL-3
 URL: https://github.com/paocorrales/rvad

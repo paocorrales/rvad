@@ -7,11 +7,11 @@ ring_fit <- function(ring, azimuth, elev) {
                 r2   = NA_real_,
                 rmse = NA_real_))
   }
-  fit <- .lm.fit(cbind(1, cos(azimuth*pi/180), sin(azimuth*pi/180))[!nas, , drop = FALSE],
+  fit <- stats::.lm.fit(cbind(1, cos(azimuth*pi/180), sin(azimuth*pi/180))[!nas, , drop = FALSE],
                  ring[!nas])
 
-  rmse <- sd(fit$residuals)
-  r2 <- 1 - var(fit$residuals)/var(ring[!nas])
+  rmse <- stats::sd(fit$residuals)
+  r2 <- 1 - stats::var(fit$residuals)/stats::var(ring[!nas])
   # if (r2 > 0.8) browser()
   coef_cos <- fit$coefficients[2]
   coef_sin <- fit$coefficients[3]
@@ -26,3 +26,6 @@ ring_fit <- function(ring, azimuth, elev) {
 }
 
 
+.global_variables <- c(".", "V", "dV", "elevation", "height",
+                       "ht", "r2", "rmse", "u", "v", "var", "vr_qc")
+if(getRversion() >= "2.15.1")  utils::globalVariables(.global_variables)
