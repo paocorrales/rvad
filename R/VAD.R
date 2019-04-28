@@ -57,13 +57,19 @@ vad_fit <- function(vr, azimuth, range, elev_ang,
 
 
 plot.rvad_vad <- function(x, y, ...) {
+
   if (isTRUE(attr(x, "rvad_raw"))) {
-    x <- x[complete.cases(x), ]
+    x <- x[stats::complete.cases(x), ]
+
+    if(!requireNamespace("ggplot2", quietly = TRUE)) {
+
+
+    }
 
     ggplot2::ggplot(x, ggplot2::aes(sqrt(u^2 + v^2), height)) +
-      ggplot2::geom_point(aes(color = factor(elevation)))
+      ggplot2::geom_point(ggplot2::aes(color = factor(elevation)))
   } else {
-    x <- x[complete.cases(x), ]
+    x <- x[stats::complete.cases(x), ]
     x$V <- sqrt(x$u^2 + x$v^2)
     x$dV <- error_prop(x$u, x$v, x$u_sd, x$v_sd)
 

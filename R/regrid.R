@@ -6,7 +6,7 @@ vad_regrid <- function(vad,
     stop("resolution must be smaller or equal than bandwitdh")
   }
 
-  vad <- vad[complete.cases(vad), ]
+  vad <- vad[stats::complete.cases(vad), ]
 
   # browser()
   # todo: chequear que la grilla tenga sentido
@@ -38,14 +38,14 @@ vad_regrid <- function(vad,
     weight <- weight_rmse * weight_range * weight_ht
     weight <- weight/sum(weight)
 
-    fit <- lm.wfit(x = cbind(1, ht[sub]),
+    fit <- stats::lm.wfit(x = cbind(1, ht[sub]),
                    y = cbind(u[sub], v[sub]),
                    w = weight)
     u_grid[i] <- fit$coefficients[1, 1] + fit$coefficients[2, 1]*ht.out[i]
     v_grid[i] <- fit$coefficients[1, 2] + fit$coefficients[2, 2]*ht.out[i]
 
-    u_sd[i] <- sd(fit$residuals[, 1])*sqrt(1/length(weight) + (ht.out[i] - mean(ht[sub]))^2/sum((ht[sub] - mean(ht[sub]))^2))
-    v_sd[i] <- sd(fit$residuals[, 2])*sqrt(1/length(weight) + (ht.out[i] - mean(ht[sub]))^2/sum((ht[sub] - mean(ht[sub]))^2))
+    u_sd[i] <- stats::sd(fit$residuals[, 1])*sqrt(1/length(weight) + (ht.out[i] - mean(ht[sub]))^2/sum((ht[sub] - mean(ht[sub]))^2))
+    v_sd[i] <- stats::sd(fit$residuals[, 2])*sqrt(1/length(weight) + (ht.out[i] - mean(ht[sub]))^2/sum((ht[sub] - mean(ht[sub]))^2))
   }
 
   return(list(height = ht.out,
