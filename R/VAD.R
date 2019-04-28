@@ -21,9 +21,11 @@ VAD <- function(vr, azimuth, range, elev_ang,
   vad <- vad[!fit_qc(vad$r2, r2_min = r2_min),
              c("spd", "dir", "r2", "rmse") := NA]
   vad[, .(range, elev_ang, height = ht, speed = spd, direction = dir, r2, rmse)]
-
-  return(as.list(vad))
+  data.table::setDF(vad)
+  return(vad)
 }
+
+
 
 
 # Parametros
