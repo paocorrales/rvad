@@ -27,7 +27,8 @@ the date in every range and elevation angle).}
 \item{r2_min}{minimum r squared permitted in each fit.}
 }
 \value{
-A data frame with class \code{rvad_vad} containing 7 variables:
+A data frame with class \code{rvad_vad} that has a \code{\link[=plot]{plot()}} method and contains
+7 variables:
 \describe{
 \item{height}{height above the radar in meters.}
 \item{u}{zonal wind in m/s.}
@@ -65,9 +66,6 @@ to define this threshold after exploring the result with \code{r2 = 1}.
 The function returns a data frame with the stimated u and v for each ring or
 a \code{NA} if the ring was rejected. It has also some quantities of quality of
 the fit.
-}
-\examples{
-
 }
 \seealso{
 \code{\link[=vad_regrid]{vad_regrid()}} to sample the result into a regular grid.
