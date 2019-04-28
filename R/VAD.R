@@ -27,9 +27,9 @@
 #' }
 #'
 #' @import data.table
-VAD <- function(vr, azimuth, range, elev_ang,
-                max_na = 0.2, max_consecutive_na = 30,
-                r2_min = 0.8) {
+vad_fit <- function(vr, azimuth, range, elev_ang,
+                    max_na = 0.2, max_consecutive_na = 30,
+                    r2_min = 0.8) {
   vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elev_ang = elev_ang)
 
   vol[, vr_qc := ring_qc(vr, azimuth,
@@ -47,17 +47,19 @@ VAD <- function(vr, azimuth, range, elev_ang,
   #   - r2 no NA
   vad <- vad[!fit_qc(vad$r2, r2_min = r2_min),
              c("u", "v", "r2", "rmse") := NA]
-  vad <- vad[, .(range, elev_ang, height = ht, u = u, v = v, r2, rmse)]
+  vad <- vad[, .(height = ht, u = u, v = v, range, elevation = elev_ang, r2, rmse)]
 
   data.table::setDF(vad)
   class(vad) <- c("rvad_vad", class(vad))
+  attr(vad, "rvad_raw") <- TRUE
   return(vad)
 }
 
 
-# plot.rvad_vad <- function(x, y, ...) {
-#   x <- x[complete.cases(x), ]
-#
-#   ggplot2::ggplot(x, aes(height, speed)) +
-#     ggplot2::geom_point(aes(color = factor(elev_ang)))
-# }
+plot.rvad_vad <- function(x, y, ...) {
+  x <- x[complete.cases(x), ]
+
+
+  ggplot2::ggplot(x, aes(height, sqrt(u^2 + v^2))) +
+    ggplot2::geom_point(aes(color = factor(elev_ang), size = r2))
+}
