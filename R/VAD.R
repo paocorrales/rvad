@@ -18,8 +18,8 @@ VAD <- function(vr, azimuth, range, elev_ang,
   #   - r2 mayor a un valor
   #   - r2 no NA
   vad <- vad[!fit_qc(vad$r2, r2_min = r2_min),
-             c("spd", "dir", "r2", "rmse") := NA]
-  vad <- vad[, .(range, elev_ang, height = ht, speed = spd, direction = dir, r2, rmse)]
+             c("u", "v", "r2", "rmse") := NA]
+  vad <- vad[, .(range, elev_ang, height = ht, u = u, v = v, r2, rmse)]
 
   data.table::setDF(vad)
   class(vad) <- c("rvad_vad", class(vad))
@@ -27,22 +27,9 @@ VAD <- function(vr, azimuth, range, elev_ang,
 }
 
 
-plot.rvad_vad <- function(x, y, ...) {
-  x <- x[complete.cases(x), ]
-
-  ggplot2::ggplot(x, aes(height, speed)) +
-    ggplot2::geom_point(aes(color = factor(elev_ang)))
-}
-
-# Parametros
-
-field  = 'Vda'    #Nombre de la variable en el archivo de datos
-angmin = 2        #Ángulo de elevación mínimo expresado como indice y empezando en 0
-angmax = 7        #Ángulo de elevación máximo expresado como indice
-rint   = 0.3      #Radio interior de la arandala a calcular en Km
-rext   = 40.0     #Radio exterior de la arandela a calcular
-maxgap = 30       #Máximo gap sin datos permitido, en grados
-maxNaN = 72       #Cantidad de de datos faltantes en un anillo
-rmin   = 0.8      #R cuadrado mínimo para que el fit del anillo sea válido
-lpf    = 'False'  #Usa o no filtro pasa bajo
-N      = 12       #Cantidad de datos a usar en el filtro, tiene que ser par!
+# plot.rvad_vad <- function(x, y, ...) {
+#   x <- x[complete.cases(x), ]
+#
+#   ggplot2::ggplot(x, aes(height, speed)) +
+#     ggplot2::geom_point(aes(color = factor(elev_ang)))
+# }

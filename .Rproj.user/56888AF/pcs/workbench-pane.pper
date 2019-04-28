@@ -1,6 +1,10 @@
 {
     "TabSet1" : 0,
+<<<<<<< Updated upstream
     "TabSet2" : 3,
+=======
+    "TabSet2" : 1,
+>>>>>>> Stashed changes
     "TabZoom" : {
     }
 }

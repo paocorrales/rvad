@@ -1,5 +1,9 @@
 {
+<<<<<<< Updated upstream
     "path" : "~/rvad/R",
+=======
+    "path" : "~/rvad",
+>>>>>>> Stashed changes
     "sortOrder" : [
         {
             "ascending" : true,
