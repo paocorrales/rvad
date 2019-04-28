@@ -15,5 +15,6 @@ BugReports: https://github.com/paocorrales/rvad/issues
 Encoding: UTF-8
 LazyData: true
 Imports: data.table
+Suggests: ggplot2 
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 6.1.1

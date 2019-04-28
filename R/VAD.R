@@ -17,7 +17,8 @@
 #' @param r2_min minimum r squared permitted in each fit.
 #'
 #' @return
-#' A data frame with class `rvad_vad` containing 7 variables:
+#' A data frame with class `rvad_vad` that has a [plot()] method and contains
+#' 7 variables:
 #' \describe{
 #' \item{height}{height above the radar in meters.}
 #' \item{u}{zonal wind in m/s.}
@@ -54,7 +55,8 @@
 #' @seealso [vad_regrid()] to sample the result into a regular grid.
 #'
 #' @example
-#'
+#' VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
+#' plot(VAD)
 #'
 #' @export
 #' @import data.table
