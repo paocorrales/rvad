@@ -88,15 +88,12 @@ vad_fit <- function(vr, azimuth, range, elev_ang,
 
 
 plot.rvad_vad <- function(x, y, ...) {
+  if(!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop('ggplot2 package needed. You can install it with `install.packages("ggplot2")')
+  }
 
   if (isTRUE(attr(x, "rvad_raw"))) {
     x <- x[stats::complete.cases(x), ]
-
-    if(!requireNamespace("ggplot2", quietly = TRUE)) {
-
-
-    }
-
     ggplot2::ggplot(x, ggplot2::aes(sqrt(u^2 + v^2), height)) +
       ggplot2::geom_point(ggplot2::aes(color = factor(elevation)))
   } else {
