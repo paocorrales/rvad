@@ -1,7 +1,11 @@
 {
     "TabSet1" : 0,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "TabSet2" : 3,
+=======
+    "TabSet2" : 1,
+>>>>>>> Stashed changes
 =======
     "TabSet2" : 1,
 >>>>>>> Stashed changes

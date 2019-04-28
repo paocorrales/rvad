@@ -3,7 +3,11 @@
         "panelheight" : 655,
         "splitterpos" : 277,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         "topwindowstate" : "NORMAL",
+=======
+        "topwindowstate" : "MAXIMIZE",
+>>>>>>> Stashed changes
 =======
         "topwindowstate" : "MAXIMIZE",
 >>>>>>> Stashed changes
@@ -12,7 +16,11 @@
     "right" : {
         "panelheight" : 655,
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         "splitterpos" : 199,
+=======
+        "splitterpos" : 408,
+>>>>>>> Stashed changes
 =======
         "splitterpos" : 408,
 >>>>>>> Stashed changes

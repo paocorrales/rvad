@@ -1,7 +1,12 @@
 {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     "cursorPosition" : "27,0",
     "scrollLine" : "12",
+=======
+    "cursorPosition" : "14,0",
+    "scrollLine" : "0",
+>>>>>>> Stashed changes
 =======
     "cursorPosition" : "14,0",
     "scrollLine" : "0",
