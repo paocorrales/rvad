@@ -1,16 +1,18 @@
 #' Calculates the horizontal of every range and and elevation using radial wind.
 #'
-#' The radial wind must not have aliasing. Also, noise and other artifacts are not good for the algorithm.
-#' Te funcction can work with sigle volumens of data scanned in PPI (Plan Position Indicator) mode.
+#' From the radial wind measured by a Doppler radar it calculate the horizontal
+#' components of the wind using the Velocity Azimuth Display from Browning and
+#' Wexler (1968).
 #'
-#' @param vr a vector containing the viento radial
-#' @param azimuth a vector of length = length(vr) containing the azimuthal angle of every
-#' vr observation.
-#' @param range a vector of length = length(vr) containing the range (in meters) asociate
-#' to the observation.
-#' @param elev_ang a vector of length = length(vr) with the elevation angle of every observation.
-#' @param max_na maximum percentage of missing data in a single ring (defined as the date in every
-#' range and elevation angle).
+#' @param vr a vector containing the radial wind.
+#' @param azimuth a vector of length = length(vr) containing the azimuthal angle
+#' of every vr observation.
+#' @param range a vector of length = length(vr) containing the range (in meters)
+#' asociate to the observation.
+#' @param elev_ang a vector of length = length(vr) with the elevation angle of
+#' every observation.
+#' @param max_na maximum percentage of missing data in a single ring (defined as
+#' the date in every range and elevation angle).
 #' @param max_consecutive_na maximun angular gap for a single ring.
 #' @param r2_min minimum r squared permitted in each fit.
 #'
@@ -23,9 +25,38 @@
 #' \item{range}{distance to the radar in meters.}
 #' \item{elevation}{elevation angle in degrees.}
 #' \item{r2}{r squared of the fit.}
-#' \item{rmse}{root mean squeared error calculated as the standar deviation of the residuals.}
+#' \item{rmse}{root mean squeared error calculated as the standar deviation of
+#' the residuals.}
 #' }
 #'
+#' @details
+#' The algorithm can work with sigle volumens of data scanned in PPI (Plan Position
+#' Indicator) mode. The radial wind must not have aliasing. Removing the noise
+#' and other artifacts is desirable.
+#'
+#' `vad_fit()` take vectors of the same length with the radial wind, azimuth angle,
+#' range and elevation angle and compute a sinusoidal fit for each ring of data
+#' (the observation for a particular range and elevation) before doing a simple
+#' quality control.
+#'
+#' First, it check if the amount of missing data (must be explicit on the data
+#' frame) is greater than `max_na`, by default a ring with more than 20% of missing
+#' data is descarted. Second, reject any ring with a gap greater than
+#' `max_consecutive_na`. Following Matejka y Srivastava (1991) the argument is
+#' set as an 30 degree angle. After the fit the algorithm check the r squared
+#' and reject all the rings with `r2` less than a threshol. It is recommended
+#' to define this threshold after exploring the result with `r2 = 1`.
+#'
+#' The function returns a data frame with the stimated u and v for each ring or
+#' a `NA` if the ring was rejected. It has also some quantities of quality of
+#' the fit.
+#'
+#' @seealso [vad_regrid()] to sample the result into a regular grid.
+#'
+#' @example
+#'
+#'
+#' @export
 #' @import data.table
 vad_fit <- function(vr, azimuth, range, elev_ang,
                     max_na = 0.2, max_consecutive_na = 30,
