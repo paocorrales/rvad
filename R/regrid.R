@@ -1,6 +1,5 @@
 vad_regrid <- function(vad,
-                   width, separation = width, ht.out = NULL) {
-
+                       width, separation = width, ht.out = NULL) {
   vad <- vad[complete.cases(vad), ]
 
   # browser()
@@ -17,6 +16,9 @@ vad_regrid <- function(vad,
 
   grid <- .loess(vad$u, vad$v, vad$height, ht.out, vad$rmse, vad$range)
   vad_grid <- data.frame(grid)
+  class(vad_grid) <- c("rvad_vad", class(vad_grid))
+  attr(vad_grid, "rvad_raw") <- FALSE
+  return(vad_grid)
 }
 
 
@@ -46,5 +48,5 @@ vad_regrid <- function(vad,
               v = v_grid,
               u_sd = u_sd,
               v_sd = v_sd
-              ))
+  ))
 }
