@@ -1,5 +1,24 @@
+#' Sample VAD to a regular grid
 #'
-
+#' @param vad `rvad_vad` object returned by [vad_fit()].
+#' @param resolution vertical resolution in meters.
+#' @param bandwidth
+#' @param ht.out
+#'
+#' @return
+#' A data frame with class `rvad_vad` that has a [plot()] method and contains
+#' 7 variables:
+#' \describe{
+#' \item{height}{height above the radar in meters.}
+#' \item{u}{zonal wind in m/s.}
+#' \item{v}{meridional wind in m/s.}
+#' \item{u_sd}{standar deviation of u in m/s.}
+#' \item{v_sd}{standar deviation of v in m/s.}
+#' }
+#'
+#' @description
+#'
+#' @export
 vad_regrid <- function(vad,
                        resolution,
                        bandwidth = resolution,
