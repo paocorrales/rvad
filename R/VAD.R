@@ -61,7 +61,7 @@
 vad_fit <- function(vr, azimuth, range, elevation,
                     max_na = 0.2, max_consecutive_na = 30,
                     r2_min = 0.8) {
-  vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elev_ang = elevation)
+  vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elevation = elevation)
 
   vol[, vr_qc := ring_qc(vr, azimuth,
                          max_na = max_na,
@@ -71,14 +71,11 @@ vad_fit <- function(vr, azimuth, range, elevation,
   vad <- vol[, ring_fit(vr_qc, azimuth, elevation),
              by = .(range, elevation)]
 
-  vad[, ht := beam_propagation(vad$range, elev_ang = vad$elev_ang)$ht]
+  vad[, height := beam_propagation(vad$range, elevation = vad$elevation)$ht]
 
-  # 6. Control de calidad sobre el fit
-  #   - r2 mayor a un valor
-  #   - r2 no NA
   vad <- vad[!fit_qc(vad$r2, r2_min = r2_min),
              c("u", "v", "r2", "rmse") := NA]
-  vad <- vad[, .(height = ht, u = u, v = v, range, elevation = elevation, r2, rmse)]
+  vad <- vad[, .(height, u, v, range, elevation, r2, rmse)]
 
   data.table::setDF(vad)
   class(vad) <- c("rvad_vad", class(vad))
@@ -86,35 +83,3 @@ vad_fit <- function(vr, azimuth, range, elevation,
   return(vad)
 }
 
-
-plot.rvad_vad <- function(x, y, ...) {
-  if(!requireNamespace("ggplot2", quietly = TRUE)) {
-    stop('ggplot2 package needed. You can install it with `install.packages("ggplot2")')
-  }
-
-  if (isTRUE(attr(x, "rvad_raw"))) {
-    x <- x[stats::complete.cases(x), ]
-    x$elevation <- factor(x$elevation)
-    ggplot2::ggplot(x, ggplot2::aes(sqrt(u^2 + v^2), height)) +
-      ggplot2::geom_point(ggplot2::aes(color = elevation))
-  } else {
-    x <- x[stats::complete.cases(x), ]
-    x$V <- sqrt(x$u^2 + x$v^2)
-    x$dV <- error_prop(x$u, x$v, x$u_sd, x$v_sd)
-
-    ggplot2::ggplot(x, ggplot2::aes(height, V)) +
-      ggplot2::geom_point() +
-      ggplot2::geom_line() +
-      ggplot2::geom_ribbon(ggplot2::aes(ymin = V - 2*dV, ymax = V + 2*dV),
-                           alpha = 0.2) +
-      ggplot2::coord_flip()
-  }
-
-
-
-}
-
-
-error_prop <- function(u, v, du, dv) {
-  1/sqrt(u^2 + v^2)*sqrt((u*du)^2 + (v*dv)^2)
-}
