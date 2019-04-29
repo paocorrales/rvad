@@ -1,3 +1,4 @@
+#' @export
 plot.rvad_vad <- function(x, y, ...) {
   if(!requireNamespace("ggplot2", quietly = TRUE)) {
     stop('ggplot2 package needed. You can install it with `install.packages("ggplot2")')
@@ -13,7 +14,7 @@ plot.rvad_vad <- function(x, y, ...) {
     x$V <- sqrt(x$u^2 + x$v^2)
     x$dV <- error_prop(x$u, x$v, x$u_std.error, x$v_std.error)
 
-    ggplot2::ggplot(x, ggplot2::aes(height, V)) +
+    ggplot2::ggplot(x, ggplot2::aes(height, sqrt(u^2 + v^2))) +
       ggplot2::geom_point() +
       ggplot2::geom_line() +
       ggplot2::geom_ribbon(ggplot2::aes(ymin = V - 2*dV, ymax = V + 2*dV),
