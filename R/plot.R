@@ -11,7 +11,7 @@ plot.rvad_vad <- function(x, y, ...) {
   } else {
     x <- x[stats::complete.cases(x), ]
     x$V <- sqrt(x$u^2 + x$v^2)
-    x$dV <- error_prop(x$u, x$v, x$u_sd, x$v_sd)
+    x$dV <- error_prop(x$u, x$v, x$u_std.error, x$v_std.error)
 
     ggplot2::ggplot(x, ggplot2::aes(height, V)) +
       ggplot2::geom_point() +

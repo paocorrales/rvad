@@ -2,4 +2,5 @@
 
 export(beam_propagation)
 export(vad_fit)
+export(vad_regrid)
 import(data.table)
