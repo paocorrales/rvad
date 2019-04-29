@@ -1,4 +1,3 @@
-
 ring_fit <- function(ring, azimuth, elev) {
   nas <- is.na(ring)
   if (sum(nas) == length(ring)) {

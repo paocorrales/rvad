@@ -1,3 +1,5 @@
+#'
+
 vad_regrid <- function(vad,
                        resolution,
                        bandwidth = resolution,
