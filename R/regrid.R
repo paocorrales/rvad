@@ -4,19 +4,20 @@ vad_regrid <- function(vad,
                        resolution,
                        bandwidth = resolution,
                        ht.out = NULL) {
-  if (resolution > bandwidth) {
-    stop("resolution must be smaller or equal than bandwitdh")
-  }
-
   vad <- vad[stats::complete.cases(vad), ]
 
-  # browser()
-  # todo: chequear que la grilla tenga sentido
-  half_resolution <- resolution/2
   if (is.null(ht.out)) {
+    if (resolution > bandwidth) {
+      stop("resolution must be smaller or equal than bandwitdh")
+    }
+    half_resolution <- resolution/2
     ht.out <- seq(min(vad$height) + half_resolution,
-                    max(vad$height) - half_resolution,
-                    by = resolution)
+                  max(vad$height) - half_resolution,
+                  by = resolution)
+  }
+
+  if (missing(bandwidth)) {
+    stop('argument "bandwidth" is missing, with no default')
   }
 
   grid <- .loess(vad$u, vad$v, vad$height, ht.out, bandwidth, vad$rmse, vad$range)
@@ -41,8 +42,8 @@ vad_regrid <- function(vad,
     weight <- weight/sum(weight)
 
     fit <- stats::lm.wfit(x = cbind(1, ht[sub]),
-                   y = cbind(u[sub], v[sub]),
-                   w = weight)
+                          y = cbind(u[sub], v[sub]),
+                          w = weight)
     u_grid[i] <- fit$coefficients[1, 1] + fit$coefficients[2, 1]*ht.out[i]
     v_grid[i] <- fit$coefficients[1, 2] + fit$coefficients[2, 2]*ht.out[i]
 
