@@ -7,9 +7,9 @@
 
 <!-- badges: end -->
 
-The goal of rvad is to approximates the horizontal components of the
-wind from radial wind measured by Doppler radar using the Velocity
-Azimuth Display method from [Browning and Wexler
+The goal of rvad is to approximate the horizontal components of the wind
+from radial wind measured by Doppler radar using the Velocity Azimuth
+Display method from [Browning and Wexler
 (1968)](https://journals.ametsoc.org/doi/abs/10.1175/1520-0450%281968%29007%3C0105%3ATDOKPO%3E2.0.CO%3B2).
 
 ## Installation
