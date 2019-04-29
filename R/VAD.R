@@ -116,7 +116,5 @@ plot.rvad_vad <- function(x, y, ...) {
 
 
 error_prop <- function(u, v, du, dv) {
-
   1/sqrt(u^2 + v^2)*sqrt((u*du)^2 + (v*dv)^2)
-
 }
