@@ -2,22 +2,22 @@
 % Please edit documentation in R/VAD.R
 \name{vad_fit}
 \alias{vad_fit}
-\title{Calculates the horizontal of every range and and elevation using radial wind.}
+\title{Velocity Azimuth Display}
 \usage{
-vad_fit(vr, azimuth, range, elev_ang, max_na = 0.2,
+vad_fit(vr, azimuth, range, elevation, max_na = 0.2,
   max_consecutive_na = 30, r2_min = 0.8)
 }
 \arguments{
 \item{vr}{a vector containing the radial wind.}
 
 \item{azimuth}{a vector of length = length(vr) containing the azimuthal angle
-of every vr observation.}
+of every vr observation in degrees clockwise from 12 o' clock.}
 
 \item{range}{a vector of length = length(vr) containing the range (in meters)
 asociate to the observation.}
 
-\item{elev_ang}{a vector of length = length(vr) with the elevation angle of
-every observation.}
+\item{elevation}{a vector of length = length(vr) with the elevation angle of
+every observation in degrees.}
 
 \item{max_na}{maximum percentage of missing data in a single ring (defined as
 the date in every range and elevation angle).}
@@ -41,31 +41,34 @@ the residuals.}
 }
 }
 \description{
-From the radial wind measured by a Doppler radar it calculate the horizontal
-components of the wind using the Velocity Azimuth Display from Browning and
+Approximates the horizontal components of the wind from radial wind measured
+by Doppler radar using the Velocity Azimuth Display method from Browning and
 Wexler (1968).
 }
 \details{
-The algorithm can work with sigle volumens of data scanned in PPI (Plan Position
+The algorithm can work with sigle volume of data scanned in PPI (Plan Position
 Indicator) mode. The radial wind must not have aliasing. Removing the noise
 and other artifacts is desirable.
 
-\code{vad_fit()} take vectors of the same length with the radial wind, azimuth angle,
-range and elevation angle and compute a sinusoidal fit for each ring of data
+\code{vad_fit()} takes vectors of the same length with radial wind, azimuth angle,
+range and elevation angle and computes a sinusoidal fit for each ring of data
 (the observation for a particular range and elevation) before doing a simple
 quality control.
 
-First, it check if the amount of missing data (must be explicit on the data
+First, it checks if the amount of missing data (must be explicit on the data
 frame) is greater than \code{max_na}, by default a ring with more than 20% of missing
-data is descarted. Second, reject any ring with a gap greater than
-\code{max_consecutive_na}. Following Matejka y Srivastava (1991) the argument is
-set as an 30 degree angle. After the fit the algorithm check the r squared
-and reject all the rings with \code{r2} less than a threshol. It is recommended
-to define this threshold after exploring the result with \code{r2 = 1}.
+data is descarted. Second, rejects any ring with a gap greater than
+\code{max_consecutive_na}. Following Matejka y Srivastava (1991) the default is
+set as 30 degrees. After the fit, the algorithm rejects rings whose fit has
+a \code{r2} less than \code{r2_min}. It is recommended to define this threshold
+after exploring the result with \code{r2_min = 0}.
 
-The function returns a data frame with the stimated u and v for each ring or
-a \code{NA} if the ring was rejected. It has also some quantities of quality of
-the fit.
+Rings that fail any of the above-mentioned checks return \code{NA}.
+}
+\examples{
+VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
+plot(VAD)
+
 }
 \seealso{
 \code{\link[=vad_regrid]{vad_regrid()}} to sample the result into a regular grid.

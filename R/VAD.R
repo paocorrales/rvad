@@ -1,16 +1,16 @@
-#' Calculates the horizontal of every range and and elevation using radial wind.
+#' Velocity Azimuth Display
 #'
-#' From the radial wind measured by a Doppler radar it calculate the horizontal
-#' components of the wind using the Velocity Azimuth Display from Browning and
+#' Approximates the horizontal components of the wind from radial wind measured
+#' by Doppler radar using the Velocity Azimuth Display method from Browning and
 #' Wexler (1968).
 #'
 #' @param vr a vector containing the radial wind.
 #' @param azimuth a vector of length = length(vr) containing the azimuthal angle
-#' of every vr observation.
+#' of every vr observation in degrees clockwise from 12 o' clock.
 #' @param range a vector of length = length(vr) containing the range (in meters)
 #' asociate to the observation.
-#' @param elev_ang a vector of length = length(vr) with the elevation angle of
-#' every observation.
+#' @param elevation a vector of length = length(vr) with the elevation angle of
+#' every observation in degrees.
 #' @param max_na maximum percentage of missing data in a single ring (defined as
 #' the date in every range and elevation angle).
 #' @param max_consecutive_na maximun angular gap for a single ring.
@@ -31,47 +31,45 @@
 #' }
 #'
 #' @details
-#' The algorithm can work with sigle volumens of data scanned in PPI (Plan Position
+#' The algorithm can work with sigle volume of data scanned in PPI (Plan Position
 #' Indicator) mode. The radial wind must not have aliasing. Removing the noise
 #' and other artifacts is desirable.
 #'
-#' `vad_fit()` take vectors of the same length with the radial wind, azimuth angle,
-#' range and elevation angle and compute a sinusoidal fit for each ring of data
+#' `vad_fit()` takes vectors of the same length with radial wind, azimuth angle,
+#' range and elevation angle and computes a sinusoidal fit for each ring of data
 #' (the observation for a particular range and elevation) before doing a simple
 #' quality control.
 #'
-#' First, it check if the amount of missing data (must be explicit on the data
+#' First, it checks if the amount of missing data (must be explicit on the data
 #' frame) is greater than `max_na`, by default a ring with more than 20% of missing
-#' data is descarted. Second, reject any ring with a gap greater than
-#' `max_consecutive_na`. Following Matejka y Srivastava (1991) the argument is
-#' set as an 30 degree angle. After the fit the algorithm check the r squared
-#' and reject all the rings with `r2` less than a threshol. It is recommended
-#' to define this threshold after exploring the result with `r2 = 1`.
+#' data is descarted. Second, rejects any ring with a gap greater than
+#' `max_consecutive_na`. Following Matejka y Srivastava (1991) the default is
+#' set as 30 degrees. After the fit, the algorithm rejects rings whose fit has
+#' a `r2` less than `r2_min`. It is recommended to define this threshold
+#' after exploring the result with `r2_min = 0`.
 #'
-#' The function returns a data frame with the stimated u and v for each ring or
-#' a `NA` if the ring was rejected. It has also some quantities of quality of
-#' the fit.
+#' Rings that fail any of the above-mentioned checks return `NA`.
 #'
 #' @seealso [vad_regrid()] to sample the result into a regular grid.
 #'
-#' @example
+#' @examples
 #' VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
 #' plot(VAD)
 #'
 #' @export
 #' @import data.table
-vad_fit <- function(vr, azimuth, range, elev_ang,
+vad_fit <- function(vr, azimuth, range, elevation,
                     max_na = 0.2, max_consecutive_na = 30,
                     r2_min = 0.8) {
-  vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elev_ang = elev_ang)
+  vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elev_ang = elevation)
 
   vol[, vr_qc := ring_qc(vr, azimuth,
                          max_na = max_na,
                          max_consecutive_na = max_consecutive_na),
-      by = .(range, elev_ang)]
+      by = .(range, elevation)]
 
-  vad <- vol[, ring_fit(vr_qc, azimuth, elev_ang),
-             by = .(range, elev_ang)]
+  vad <- vol[, ring_fit(vr_qc, azimuth, elevation),
+             by = .(range, elevation)]
 
   vad[, ht := beam_propagation(vad$range, elev_ang = vad$elev_ang)$ht]
 
@@ -80,7 +78,7 @@ vad_fit <- function(vr, azimuth, range, elev_ang,
   #   - r2 no NA
   vad <- vad[!fit_qc(vad$r2, r2_min = r2_min),
              c("u", "v", "r2", "rmse") := NA]
-  vad <- vad[, .(height = ht, u = u, v = v, range, elevation = elev_ang, r2, rmse)]
+  vad <- vad[, .(height = ht, u = u, v = v, range, elevation = elevation, r2, rmse)]
 
   data.table::setDF(vad)
   class(vad) <- c("rvad_vad", class(vad))
@@ -90,17 +88,15 @@ vad_fit <- function(vr, azimuth, range, elev_ang,
 
 
 plot.rvad_vad <- function(x, y, ...) {
+  if(!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop('ggplot2 package needed. You can install it with `install.packages("ggplot2")')
+  }
 
   if (isTRUE(attr(x, "rvad_raw"))) {
     x <- x[stats::complete.cases(x), ]
-
-    if(!requireNamespace("ggplot2", quietly = TRUE)) {
-
-
-    }
-
+    x$elevation <- factor(x$elevation)
     ggplot2::ggplot(x, ggplot2::aes(sqrt(u^2 + v^2), height)) +
-      ggplot2::geom_point(ggplot2::aes(color = factor(elevation)))
+      ggplot2::geom_point(ggplot2::aes(color = elevation))
   } else {
     x <- x[stats::complete.cases(x), ]
     x$V <- sqrt(x$u^2 + x$v^2)
