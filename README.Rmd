@@ -72,7 +72,7 @@ str(VAD)
 plot(VAD)
 ```
 
-The optimal quality control parameters (minimum $R^2$, maximum missing values, etc...) can be case-dependant so it's advisable to test different values.
+The optimal quality control parameters (minimum r^2, maximum missing values, etc...) can be case-dependant so it's advisable to test different values.
 
 `vad_regrid()` aggregates the result into a single wind profile defined in a regular grid using local regression.
 

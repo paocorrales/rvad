@@ -100,7 +100,7 @@ plot(VAD)
 
 ![](man/figures/README-unnamed-chunk-5-1.png)<!-- -->
 
-The optimal quality control parameters (minimum \(R^2\), maximum missing
+The optimal quality control parameters (minimum r^2, maximum missing
 values, etc…) can be case-dependant so it’s advisable to test different
 values.
 
