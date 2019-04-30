@@ -5,7 +5,8 @@
 \title{Velocity Azimuth Display}
 \usage{
 vad_fit(vr, azimuth, range, elevation, max_na = 0.2,
-  max_consecutive_na = 30, r2_min = 0.8)
+  max_consecutive_na = 30, r2_min = 0.8, azimuth_origin = 90,
+  azimuth_direction = c("cw", "ccw"))
 }
 \arguments{
 \item{vr}{a vector containing the radial wind.}
@@ -25,6 +26,11 @@ the date in every range and elevation angle).}
 \item{max_consecutive_na}{maximun angular gap for a single ring.}
 
 \item{r2_min}{minimum r squared permitted in each fit.}
+
+\item{azimuth_origin}{angle that represents the zero azimuth in degrees
+counterclockwise from the x axis.}
+
+\item{azimuth_directon}{direction of the azimuth angle.}
 }
 \value{
 A data frame with class \code{rvad_vad} that has a \code{\link[=plot]{plot()}} method and contains

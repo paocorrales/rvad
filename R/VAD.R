@@ -15,6 +15,9 @@
 #' the date in every range and elevation angle).
 #' @param max_consecutive_na maximun angular gap for a single ring.
 #' @param r2_min minimum r squared permitted in each fit.
+#' @param azimuth_origin angle that represents the zero azimuth in degrees
+#' counterclockwise from the x axis.
+#' @param azimuth_directon direction of the azimuth angle.
 #'
 #' @return
 #' A data frame with class `rvad_vad` that has a [plot()] method and contains
@@ -60,9 +63,21 @@
 #' @import data.table
 vad_fit <- function(vr, azimuth, range, elevation,
                     max_na = 0.2, max_consecutive_na = 30,
-                    r2_min = 0.8) {
-  vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elevation = elevation)
+                    r2_min = 0.8,
+                    azimuth_origin = 90,
+                    azimuth_direction = c("cw", "ccw")) {
 
+
+  azimuth_direction <- switch (azimuth_direction[1],
+                               cw = -1,
+                               ccw = 1,
+                               stop('azimuth_direction must be "cw" or "ccw"'))
+
+  # Pasa a 90 cw
+  azimuth_math <- azimuth_origin + azimuth_direction*azimuth
+  azimuth <- 90 - azimuth_math
+
+  vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elevation = elevation)
   vol[, vr_qc := ring_qc(vr, azimuth,
                          max_na = max_na,
                          max_consecutive_na = max_consecutive_na),
