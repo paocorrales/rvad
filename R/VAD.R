@@ -4,7 +4,7 @@
 #' by Doppler radar using the Velocity Azimuth Display method from Browning and
 #' Wexler (1968).
 #'
-#' @param vr a vector containing the radial wind.
+#' @param radial_wind a vector containing the radial wind.
 #' @param azimuth a vector of length = length(vr) containing the azimuthal angle
 #' of every vr observation in degrees clockwise from 12 o' clock.
 #' @param range a vector of length = length(vr) containing the range (in meters)
@@ -56,12 +56,12 @@
 #' @seealso [vad_regrid()] to sample the result into a regular grid.
 #'
 #' @examples
-#' VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
+#' VAD <- with(radial_wind, vad_fit(radial_wind, azimuth, range, elevation))
 #' plot(VAD)
 #'
 #' @export
 #' @import data.table
-vad_fit <- function(vr, azimuth, range, elevation,
+vad_fit <- function(radial_wind, azimuth, range, elevation,
                     max_na = 0.2, max_consecutive_na = 30,
                     r2_min = 0.8,
                     azimuth_origin = 90,
@@ -77,8 +77,8 @@ vad_fit <- function(vr, azimuth, range, elevation,
   azimuth_math <- azimuth_origin + azimuth_direction*azimuth
   azimuth <- 90 - azimuth_math
 
-  vol <- data.table::data.table(vr = vr, azimuth = azimuth, range = range, elevation = elevation)
-  vol[, vr_qc := ring_qc(vr, azimuth,
+  vol <- data.table::data.table(radial_wind = radial_wind, azimuth = azimuth, range = range, elevation = elevation)
+  vol[, vr_qc := ring_qc(radial_wind, azimuth,
                          max_na = max_na,
                          max_consecutive_na = max_consecutive_na),
       by = .(range, elevation)]

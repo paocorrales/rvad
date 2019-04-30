@@ -4,12 +4,12 @@
 \alias{vad_fit}
 \title{Velocity Azimuth Display}
 \usage{
-vad_fit(vr, azimuth, range, elevation, max_na = 0.2,
+vad_fit(radial_wind, azimuth, range, elevation, max_na = 0.2,
   max_consecutive_na = 30, r2_min = 0.8, azimuth_origin = 90,
   azimuth_direction = c("cw", "ccw"))
 }
 \arguments{
-\item{vr}{a vector containing the radial wind.}
+\item{radial_wind}{a vector containing the radial wind.}
 
 \item{azimuth}{a vector of length = length(vr) containing the azimuthal angle
 of every vr observation in degrees clockwise from 12 o' clock.}
@@ -72,7 +72,7 @@ after exploring the result with \code{r2_min = 0}.
 Rings that fail any of the above-mentioned checks return \code{NA}.
 }
 \examples{
-VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
+VAD <- with(radial_wind, vad_fit(radial_wind, azimuth, range, elevation))
 plot(VAD)
 
 }
