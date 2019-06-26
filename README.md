@@ -42,10 +42,10 @@ radar (range):
 library(rvad)
 str(radial_wind)  # sample dataset
 #> Classes 'data.table' and 'data.frame':   2076960 obs. of  4 variables:
-#>  $ range    : int  250 750 1250 1750 2250 2750 3250 3750 4250 4750 ...
-#>  $ vr       : num  NA NA -4.189 0.419 -4.556 ...
-#>  $ azimuth  : num  214 214 214 214 214 ...
-#>  $ elevation: num  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
+#>  $ range      : int  250 750 1250 1750 2250 2750 3250 3750 4250 4750 ...
+#>  $ radial_wind: num  NA NA -4.189 0.419 -4.556 ...
+#>  $ azimuth    : num  214 214 214 214 214 ...
+#>  $ elevation  : num  0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 ...
 #>  - attr(*, ".internal.selfref")=<externalptr>
 ```
 
@@ -59,9 +59,9 @@ library(ggplot2)
 #>   c.quosures     rlang
 #>   print.quosures rlang
 one_elevation <- subset(radial_wind, elevation == unique(elevation)[3] &
-                          !is.na(vr))
+                          !is.na(radial_wind))
 ggplot(one_elevation, aes(azimuth, range)) +
-  geom_point(aes(color = vr, size = range^2)) +
+  geom_point(aes(color = radial_wind, size = range^2)) +
   scale_radius(range = c(0, 0.05), guide = "none") +
   scale_color_gradient2(low = "blue", high = "red") +
   scale_y_continuous(limits = c(0, 100000)) +
@@ -78,10 +78,11 @@ comming from the northeast.
 `vad_fit()` does some quality control and then fits a sinusoidal model
 to the data and returns zonal and meridional wind for each elevation
 angle, and range. It also approximates the propagation of the radar beam
-to get the height of each observation.
+to get the height of each
+observation.
 
 ``` r
-VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
+VAD <- with(radial_wind, vad_fit(radial_wind, azimuth, range, elevation))
 str(VAD)
 #> Classes 'rvad_vad' and 'data.frame': 5760 obs. of  7 variables:
 #>  $ height   : num  2.19 6.58 11 15.45 19.93 ...
