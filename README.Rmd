@@ -67,6 +67,7 @@ VAD <- with(radial_wind, vad_fit(radial_wind, azimuth, range, elevation))
 str(VAD)
 ```
 
+This function has a plot method.
 
 ```{r}
 plot(VAD)
