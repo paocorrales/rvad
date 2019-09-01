@@ -53,11 +53,6 @@ This is how the data looks like for one particular elevation angle.
 
 ``` r
 library(ggplot2)
-#> Registered S3 methods overwritten by 'ggplot2':
-#>   method         from 
-#>   [.quosures     rlang
-#>   c.quosures     rlang
-#>   print.quosures rlang
 one_elevation <- subset(radial_wind, elevation == unique(elevation)[3] &
                           !is.na(radial_wind))
 ggplot(one_elevation, aes(azimuth, range)) +
@@ -94,6 +89,8 @@ str(VAD)
 #>  $ rmse     : num  NA NA NA NA NA NA NA NA NA NA ...
 #>  - attr(*, "rvad_raw")= logi TRUE
 ```
+
+This function has a plot method.
 
 ``` r
 plot(VAD)
