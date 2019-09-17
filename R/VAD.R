@@ -5,19 +5,21 @@
 #' Wexler (1968).
 #'
 #' @param radial_wind a vector containing the radial wind.
-#' @param azimuth a vector of length = length(vr) containing the azimuthal angle
-#' of every vr observation in degrees clockwise from 12 o' clock.
-#' @param range a vector of length = length(vr) containing the range (in meters)
+#' @param azimuth a vector of length = length(radial_wind) containing the azimuthal angle
+#' of every radial_wind observation in degrees clockwise from 12 o' clock.
+#' @param range a vector of length = length(radial_wind) containing the range (in meters)
 #' asociate to the observation.
-#' @param elevation a vector of length = length(vr) with the elevation angle of
+#' @param elevation a vector of length = length(radial_wind) with the elevation angle of
 #' every observation in degrees.
 #' @param max_na maximum percentage of missing data in a single ring (defined as
 #' the date in every range and elevation angle).
 #' @param max_consecutive_na maximun angular gap for a single ring.
 #' @param r2_min minimum r squared permitted in each fit.
+#' @param outlier_threshold threshhold for removing outliers in standard deviation
+#' units
 #' @param azimuth_origin angle that represents the zero azimuth in degrees
 #' counterclockwise from the x axis.
-#' @param azimuth_directon direction of the azimuth angle.
+#' @param azimuth_direction direction of the azimuth angle.
 #'
 #' @return
 #' A data frame with class `rvad_vad` that has a [plot()] method and contains
@@ -64,6 +66,7 @@
 vad_fit <- function(radial_wind, azimuth, range, elevation,
                     max_na = 0.2, max_consecutive_na = 30,
                     r2_min = 0.8,
+                    outlier_threshold = Inf,
                     azimuth_origin = 90,
                     azimuth_direction = c("cw", "ccw")) {
 
@@ -83,7 +86,7 @@ vad_fit <- function(radial_wind, azimuth, range, elevation,
                          max_consecutive_na = max_consecutive_na),
       by = .(range, elevation)]
 
-  vad <- vol[, ring_fit(vr_qc, azimuth, elevation),
+  vad <- vol[, ring_fit(vr_qc, azimuth, elevation, outlier_threshold),
              by = .(range, elevation)]
 
   vad[, height := beam_propagation(vad$range, elevation = vad$elevation)$ht]

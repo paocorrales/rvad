@@ -1,4 +1,5 @@
-ring_fit <- function(ring, azimuth, elev) {
+ring_fit <- function(ring, azimuth, elev, outlier_threshold = Inf) {
+
   nas <- is.na(ring)
   if (sum(nas) == length(ring)) {
     return(list(u  = NA_real_,
@@ -6,10 +7,21 @@ ring_fit <- function(ring, azimuth, elev) {
                 r2   = NA_real_,
                 rmse = NA_real_))
   }
-  fit <- stats::.lm.fit(cbind(1, cos(azimuth*pi/180), sin(azimuth*pi/180))[!nas, , drop = FALSE],
-                 ring[!nas])
 
-  rmse <- stats::sd(fit$residuals)
+  n_outliers <- 1
+  while(n_outliers > 0) {
+    fit <- stats::.lm.fit(cbind(1, cos(azimuth*pi/180), sin(azimuth*pi/180))[!nas, , drop = FALSE],
+                          ring[!nas])
+    rmse <- stats::sd(fit$residuals)
+
+    outliers <- abs(fit$residuals) >= outlier_threshold*rmse
+    n_outliers <- sum(outliers)
+    # n_outliers
+    ring[!nas][outliers] <- NA
+    nas <- is.na(ring)
+  }
+
+
   r2 <- 1 - stats::var(fit$residuals)/stats::var(ring[!nas])
   # if (r2 > 0.8) browser()
   coef_cos <- fit$coefficients[2]

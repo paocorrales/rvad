@@ -5,19 +5,19 @@
 \title{Velocity Azimuth Display}
 \usage{
 vad_fit(radial_wind, azimuth, range, elevation, max_na = 0.2,
-  max_consecutive_na = 30, r2_min = 0.8, azimuth_origin = 90,
-  azimuth_direction = c("cw", "ccw"))
+  max_consecutive_na = 30, r2_min = 0.8, outlier_threshold = Inf,
+  azimuth_origin = 90, azimuth_direction = c("cw", "ccw"))
 }
 \arguments{
 \item{radial_wind}{a vector containing the radial wind.}
 
-\item{azimuth}{a vector of length = length(vr) containing the azimuthal angle
-of every vr observation in degrees clockwise from 12 o' clock.}
+\item{azimuth}{a vector of length = length(radial_wind) containing the azimuthal angle
+of every radial_wind observation in degrees clockwise from 12 o' clock.}
 
-\item{range}{a vector of length = length(vr) containing the range (in meters)
+\item{range}{a vector of length = length(radial_wind) containing the range (in meters)
 asociate to the observation.}
 
-\item{elevation}{a vector of length = length(vr) with the elevation angle of
+\item{elevation}{a vector of length = length(radial_wind) with the elevation angle of
 every observation in degrees.}
 
 \item{max_na}{maximum percentage of missing data in a single ring (defined as
@@ -27,10 +27,13 @@ the date in every range and elevation angle).}
 
 \item{r2_min}{minimum r squared permitted in each fit.}
 
+\item{outlier_threshold}{threshhold for removing outliers in standard deviation
+units}
+
 \item{azimuth_origin}{angle that represents the zero azimuth in degrees
 counterclockwise from the x axis.}
 
-\item{azimuth_directon}{direction of the azimuth angle.}
+\item{azimuth_direction}{direction of the azimuth angle.}
 }
 \value{
 A data frame with class \code{rvad_vad} that has a \code{\link[=plot]{plot()}} method and contains
