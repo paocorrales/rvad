@@ -49,9 +49,9 @@ This is how the data looks like for one particular elevation angle.
 ```{r}
 library(ggplot2)
 one_elevation <- subset(radial_wind, elevation == unique(elevation)[3] &
-                          !is.na(vr))
+                          !is.na(radial_wind))
 ggplot(one_elevation, aes(azimuth, range)) +
-  geom_point(aes(color = vr, size = range^2)) +
+  geom_point(aes(color = radial_wind, size = range^2)) +
   scale_radius(range = c(0, 0.05), guide = "none") +
   scale_color_gradient2(low = "blue", high = "red") +
   scale_y_continuous(limits = c(0, 100000)) +
@@ -63,16 +63,17 @@ Red means that the wind is moving away from the radar and blue is wind moving to
 `vad_fit()` does some quality control and then fits a sinusoidal model to the data and returns zonal and meridional wind for each elevation angle, and range. It also approximates the propagation of the radar beam to get the height of each observation.
 
 ```{r}
-VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
+VAD <- with(radial_wind, vad_fit(radial_wind, azimuth, range, elevation))
 str(VAD)
 ```
 
+This function has a plot method.
 
 ```{r}
 plot(VAD)
 ```
 
-The optimal quality control parameters (minimum $R^2$, maximum missing values, etc...) can be case-dependant so it's advisable to test different values.
+The optimal quality control parameters (minimum r^2, maximum missing values, etc...) can be case-dependant so it's advisable to test different values.
 
 `vad_regrid()` aggregates the result into a single wind profile defined in a regular grid using local regression.
 
