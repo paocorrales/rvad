@@ -8,7 +8,8 @@ plot.rvad_vad <- function(x, y, ...) {
     x <- x[stats::complete.cases(x), ]
     x$elevation <- factor(x$elevation)
     ggplot2::ggplot(x, ggplot2::aes(sqrt(u^2 + v^2), height)) +
-      ggplot2::geom_point(ggplot2::aes(color = elevation))
+      ggplot2::geom_point(ggplot2::aes(color = elevation)) +
+      ggplot2::scale_color_viridis_d()
   } else {
     x <- x[stats::complete.cases(x), ]
     x$V <- sqrt(x$u^2 + x$v^2)

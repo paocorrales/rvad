@@ -53,11 +53,6 @@ This is how the data looks like for one particular elevation angle.
 
 ``` r
 library(ggplot2)
-#> Registered S3 methods overwritten by 'ggplot2':
-#>   method         from 
-#>   [.quosures     rlang
-#>   c.quosures     rlang
-#>   print.quosures rlang
 one_elevation <- subset(radial_wind, elevation == unique(elevation)[3] &
                           !is.na(vr))
 ggplot(one_elevation, aes(azimuth, range)) +
