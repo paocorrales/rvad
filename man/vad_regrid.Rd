@@ -4,7 +4,7 @@
 \alias{vad_regrid}
 \title{Wind profile from VAD}
 \usage{
-vad_regrid(vad, layer_width, resolution = layer_width, ht.out = NULL,
+vad_regrid(vad, layer_width, resolution = layer_width, ht_out = NULL,
   min_n = 5)
 }
 \arguments{
@@ -14,7 +14,7 @@ vad_regrid(vad, layer_width, resolution = layer_width, ht.out = NULL,
 
 \item{resolution}{vertical resolution in meters.}
 
-\item{ht.out}{vector of heights where to evaluate. Overrides \code{resolution}.}
+\item{ht_out}{vector of heights where to evaluate. Overrides \code{resolution}.}
 
 \item{min_n}{minimum number of points in each layer.}
 }
@@ -46,7 +46,7 @@ estimates (because it's basedon more data points) but reduces the effective
 resolution.
 }
 \examples{
-VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
+VAD <- with(radial_wind, vad_fit(radial_wind, azimuth, range, elevation))
 
 # Wind profile with effective resolution of 100
 plot(vad_regrid(VAD, layer_width = 100, resolution = 100))

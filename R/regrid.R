@@ -7,7 +7,7 @@
 #' @param vad an `rvad_vad` object returned by [vad_fit()].
 #' @param layer_width width of the layers in meters (see Details).
 #' @param resolution vertical resolution in meters.
-#' @param ht.out vector of heights where to evaluate. Overrides `resolution`.
+#' @param ht_out vector of heights where to evaluate. Overrides `resolution`.
 #' @param min_n minimum number of points in each layer.
 #'
 #' @details
@@ -33,7 +33,7 @@
 #' }
 #'
 #' @examples
-#' VAD <- with(radial_wind, vad_fit(vr, azimuth, range, elevation))
+#' VAD <- with(radial_wind, vad_fit(radial_wind, azimuth, range, elevation))
 #'
 #' # Wind profile with effective resolution of 100
 #' plot(vad_regrid(VAD, layer_width = 100, resolution = 100))
@@ -49,21 +49,21 @@
 vad_regrid <- function(vad,
                        layer_width,
                        resolution = layer_width,
-                       ht.out = NULL,
+                       ht_out = NULL,
                        min_n = 5) {
   vad <- vad[stats::complete.cases(vad), ]
 
-  if (is.null(ht.out)) {
+  if (is.null(ht_out)) {
     if (resolution > layer_width) {
       stop("resolution must be smaller or equal than bandwitdh")
     }
     half_resolution <- resolution/2
-    ht.out <- seq(min(vad$height) + half_resolution,
+    ht_out <- seq(min(vad$height) + half_resolution,
                   max(vad$height) - half_resolution,
                   by = resolution)
   }
 
-  grid <- .loess(vad$u, vad$v, vad$height, ht.out, layer_width,
+  grid <- .loess(vad$u, vad$v, vad$height, ht_out, layer_width,
                  vad$rmse, vad$range, min_n = min_n)
   vad_grid <- data.frame(grid)
   class(vad_grid) <- c("rvad_vad", class(vad_grid))
@@ -72,12 +72,12 @@ vad_regrid <- function(vad,
 }
 
 
-.loess <- function(u, v, ht, ht.out, layer_width, rmse, range, min_n) {
-  v_sd <- u_sd <- v_grid <- u_grid <- rep(0, length = length(ht.out))
+.loess <- function(u, v, ht, ht_out, layer_width, rmse, range, min_n) {
+  v_sd <- u_sd <- v_grid <- u_grid <- rep(0, length = length(ht_out))
   half_layer_width <- layer_width/2
   # browser()
-  for (i in seq_along(ht.out)) {
-    sub <- ht >= (ht.out[i] - half_layer_width) & ht <= (ht.out[i] + half_layer_width)
+  for (i in seq_along(ht_out)) {
+    sub <- ht >= (ht_out[i] - half_layer_width) & ht <= (ht_out[i] + half_layer_width)
     if (sum(sub) < min_n) {
       u_grid[i] <- NA
       v_grid[i] <- NA
@@ -85,7 +85,7 @@ vad_regrid <- function(vad,
       v_sd[i] <- NA
     } else{
       # ss <<- sub
-      weight_ht <- (1 - abs(ht[sub] - ht.out[i])^3/half_layer_width^3)^3
+      weight_ht <- (1 - abs(ht[sub] - ht_out[i])^3/half_layer_width^3)^3
       weight_rmse <- 1/(rmse[sub]) / max(1/rmse[sub])
       weight_range <- 1/(range[sub]^2) / max(1/range[sub]^2)
       weight <- weight_rmse * weight_range * weight_ht
@@ -94,15 +94,15 @@ vad_regrid <- function(vad,
       fit <- stats::lm.wfit(x = cbind(1, ht[sub]),
                             y = cbind(u[sub], v[sub]),
                             w = weight)
-      u_grid[i] <- fit$coefficients[1, 1] + fit$coefficients[2, 1]*ht.out[i]
-      v_grid[i] <- fit$coefficients[1, 2] + fit$coefficients[2, 2]*ht.out[i]
+      u_grid[i] <- fit$coefficients[1, 1] + fit$coefficients[2, 1]*ht_out[i]
+      v_grid[i] <- fit$coefficients[1, 2] + fit$coefficients[2, 2]*ht_out[i]
 
-      u_sd[i] <- stats::sd(fit$residuals[, 1])*sqrt(1/length(weight) + (ht.out[i] - mean(ht[sub]))^2/sum((ht[sub] - mean(ht[sub]))^2))
-      v_sd[i] <- stats::sd(fit$residuals[, 2])*sqrt(1/length(weight) + (ht.out[i] - mean(ht[sub]))^2/sum((ht[sub] - mean(ht[sub]))^2))
+      u_sd[i] <- stats::sd(fit$residuals[, 1])*sqrt(1/length(weight) + (ht_out[i] - mean(ht[sub]))^2/sum((ht[sub] - mean(ht[sub]))^2))
+      v_sd[i] <- stats::sd(fit$residuals[, 2])*sqrt(1/length(weight) + (ht_out[i] - mean(ht[sub]))^2/sum((ht[sub] - mean(ht[sub]))^2))
     }
   }
 
-  return(list(height = ht.out,
+  return(list(height = ht_out,
               u = u_grid,
               v = v_grid,
               u_std.error = u_sd,
