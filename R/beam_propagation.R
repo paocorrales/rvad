@@ -18,11 +18,11 @@
 #'
 #' @export
 beam_propagation <- function(range, elevation, R = 6371000, Rp = 4*R/3) {
-  #Calcula la altura teniendo en cuenta la apróximación
+  #ht is the height calculated using the approximation
   ht <- sqrt(range^2 + Rp^2 + 2*range*Rp*sin(pi*elevation/180)) - Rp
-  #Calcula el rango horizontal
+  #rh is the horizontal range
   rh <- range*cos(pi*elevation/180)
-  #Calcula el angulo de elevación efectivo teniendo en cuenta la aproximación
+  #lea efective elevation angle calculated using the approximation
   lea <- pi*elevation/180 + atan((range*cos(pi*elevation/180))/(range*sin(pi*elevation/180) + Rp))
 
   return(data.frame(ht = ht,
